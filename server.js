@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 // إنشاء كائن HiAnime
-const hianime = new ANIME.HiAnime();
+const hianime = new ANIME.Zoro();
 
 // 1. الصفحة الرئيسية للتأكد من عمل السيرفر
 app.get('/', (req, res) => {
