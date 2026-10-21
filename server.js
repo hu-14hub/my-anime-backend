@@ -1,5 +1,4 @@
 import express from 'express';
-imporimport express from 'express';
 import cors from 'cors';
 import { ANIME } from '@consumet/extensions';
 
@@ -9,16 +8,27 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// استخدام المزود الصحيح الذي تم تأكيده من السجلات
-const animeProvider = new ANIME.Hianime();
+// طباعة جميع المزودين المتاحين في النسخة المثبتة لمعرفة الأسماء بدقة في سِجل Render
+console.log("Available ANIME providers:", Object.keys(ANIME));
+
+// اختيار مزود بشكل آمن بناءً على ما هو متاح في النسخة
+let animeProvider;
+try {
+  // محاولة استخدام Gogoanime أو أول مزود متاح في المكتبة
+  const providerKey = Object.keys(ANIME).find(k => k.toLowerCase().includes('gogo')) || Object.keys(ANIME)[0];
+  animeProvider = new ANIME[providerKey]();
+  console.log(`Successfully initialized provider: ${providerKey}`);
+} catch (e) {
+  console.error("Failed to initialize default provider:", e);
+}
 
 app.get('/', (req, res) => {
   res.send({ status: 'online', message: 'Anime Backend API is running successfully!' });
 });
 
-// 1. مسار البحث (يدعم keywords كما يطلبه ملف consumet.ts)
 app.get('/anime/hiAnime/search', async (req, res) => {
   try {
+    if (!animeProvider) return res.status(500).json({ error: 'No anime provider initialized' });
     const query = req.query.keywords || req.query.q;
     if (!query) return res.status(400).json({ error: 'Keywords required' });
 
@@ -30,9 +40,9 @@ app.get('/anime/hiAnime/search', async (req, res) => {
   }
 });
 
-// 2. مسار معلومات الأنمي (يدعم animeId كما يطلبه ملف consumet.ts)
 app.get('/anime/hiAnime/info', async (req, res) => {
   try {
+    if (!animeProvider) return res.status(500).json({ error: 'No anime provider initialized' });
     const animeId = req.query.animeId || req.query.id;
     if (!animeId) return res.status(400).json({ error: 'Anime ID required' });
 
@@ -44,10 +54,10 @@ app.get('/anime/hiAnime/info', async (req, res) => {
   }
 });
 
-// 3. مسار جلب روابط الحلقة (يدعم episodeId و ep كما يطلبه ملف consumet.ts)
 app.get('/anime/hiAnime/watch', async (req, res) => {
   try {
-    const episodeId = req.query.episodeId || req.query.id;
+    if (!animeProvider) return res.status(500).json({ error: 'No anime provider initialized' });
+    const episodeId = req.query.episodeId;
     if (!episodeId) return res.status(400).json({ error: 'Episode ID required' });
 
     const sources = await animeProvider.fetchEpisodeSources(episodeId);
