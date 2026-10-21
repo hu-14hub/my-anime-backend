@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 // استخدام Gogoanime لأنه المزود الأكثر استقراراً وثباتاً داخل المكتبة
-const animeProvider = new ANIME.Gogoanime();
+const animeProvider = new ANIME.GogoAnime();
 
 // 1. الصفحة الرئيسية للتأكد من عمل السيرفر
 app.get('/', (req, res) => {
