@@ -8,7 +8,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// التهيئة بالطريقة الرسمية المعتمدة في وثائق Consumet
 const animeProvider = new ANIME.GogoAnime();
 
 app.get('/', (req, res) => {
