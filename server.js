@@ -1,6 +1,6 @@
-const express = require('express');
-const cors = require('cors');
-const { ANIME } = require('@consumet/extensions');
+import express from 'express';
+import cors from 'cors';
+import { ANIME } from '@consumet/extensions';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -8,15 +8,13 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// استخدام Gogoanime لأنه المزود الأكثر استقراراً وثباتاً داخل المكتبة
+// التهيئة بالطريقة الرسمية المعتمدة في وثائق Consumet
 const animeProvider = new ANIME.GogoAnime();
 
-// 1. الصفحة الرئيسية للتأكد من عمل السيرفر
 app.get('/', (req, res) => {
   res.send({ status: 'online', message: 'Anime Backend API is running successfully!' });
 });
 
-// 2. مسار البحث (يحافظ على نفس اسم المسار الذي يطلبه موقعك)
 app.get('/anime/hiAnime/search', async (req, res) => {
   try {
     const query = req.query.keywords || req.query.q;
@@ -30,7 +28,6 @@ app.get('/anime/hiAnime/search', async (req, res) => {
   }
 });
 
-// 3. مسار جلب تفاصيل الأنمي والحلقات
 app.get('/anime/hiAnime/info', async (req, res) => {
   try {
     const animeId = req.query.animeId || req.query.id;
@@ -44,7 +41,6 @@ app.get('/anime/hiAnime/info', async (req, res) => {
   }
 });
 
-// 4. مسار جلب روابط بث الحلقة (.m3u8)
 app.get('/anime/hiAnime/watch', async (req, res) => {
   try {
     const episodeId = req.query.episodeId;
